@@ -7,6 +7,7 @@ import view.Components.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -19,7 +20,7 @@ import static model.Constant.CHESSBOARD_ROW_SIZE;
  * This class represents the checkerboard component object on the panel
  */
 public class ChessboardComponent extends JComponent implements Serializable {
-    private final CellComponent[][] gridComponents = new CellComponent[CHESSBOARD_ROW_SIZE.getNum()][CHESSBOARD_COL_SIZE.getNum()];
+    private  CellComponent[][] gridComponents = new CellComponent[CHESSBOARD_ROW_SIZE.getNum()][CHESSBOARD_COL_SIZE.getNum()];
     private final int CHESS_SIZE;
     private final Set<ChessboardPoint> riverCell = new HashSet<>();//设置河水点集 用hash码存储
     private final Set<ChessboardPoint> dens1Cell = new HashSet<>();
@@ -207,7 +208,7 @@ public class ChessboardComponent extends JComponent implements Serializable {
         System.out.println("[" + point.y/CHESS_SIZE +  ", " +point.x/CHESS_SIZE + "] Clicked");
         return new ChessboardPoint(point.y/CHESS_SIZE, point.x/CHESS_SIZE);
     }
-    private Point calculatePoint(int row, int col) {
+    public Point calculatePoint(int row, int col) {
         return new Point(col * CHESS_SIZE, row * CHESS_SIZE);
     }
 
@@ -228,17 +229,45 @@ public class ChessboardComponent extends JComponent implements Serializable {
                 //需判断是否是河流
             {
                 System.out.print("None chess here and ");
+
                 gameController.onPlayerClickCell(getChessboardPoint(e.getPoint()), (CellComponent) clickedComponent);
             }
             else
                 //需判断可否吞噬
             {
                 System.out.print("One chess here and ");
+
                 gameController.onPlayerClickChessPiece(getChessboardPoint(e.getPoint()), (ChessComponent) clickedComponent.getComponents()[0]);
             }
             System.out.printf("Now it is turn %d\n",getGameController().getTurns());
         }
+
+        if(e.getID()==MouseEvent.MOUSE_ENTERED)
+        {
+            CellComponent enteredComponent = (CellComponent) ((JComponent) getComponentAt(e.getX(), e.getY()));
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent f) {
+                    System.out.println("y");
+                    enteredComponent.setShowImage(true);
+                    enteredComponent.repaint();
+
+                }
+                public void mouseExited(MouseEvent f) {
+                    System.out.println("n");
+                    enteredComponent.setShowImage(false);
+                    enteredComponent.repaint();
+                    // You can add more tasks here
+                }
+
+            });
+
+        }
     }
+
+
+
+
 
     public GameController getGameController() {
         return gameController;
@@ -264,7 +293,7 @@ public class ChessboardComponent extends JComponent implements Serializable {
         return chessGameFrame;
     }
 
-    public void GreenComponent(CellComponent cell,Point temp){
-        cell=new CellComponent(Color.GREEN,temp,CHESS_SIZE);
+    public CellComponent getGridComponents(int i,int j) {
+        return gridComponents[i][j];
     }
 }

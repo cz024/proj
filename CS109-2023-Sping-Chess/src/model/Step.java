@@ -1,5 +1,5 @@
 package model;
-import controller.GameController;
+import controller.User;
 import view.*;
 
 import java.io.Serializable;
@@ -20,6 +20,8 @@ public class Step implements Serializable{
     private ChessPiece destpiece;
     private ChessComponent destComponent;
     private PlayerColor color;
+    private User userRed;
+    private User userBlue;
 
     public ChessComponent getDestComponent() {
         return destComponent;
@@ -37,11 +39,13 @@ public class Step implements Serializable{
         this.srcComponent = srcComponent;
     }
 
-    public Step(PlayerColor color, ChessboardPoint src, ChessboardPoint dest )//存在
+    public Step(PlayerColor color, ChessboardPoint src, ChessboardPoint dest, User userRed ,User userBlue)//存在
     {
         this.color=color;
         this.src=src;
         this.dest=dest;
+        this.userRed=userRed;
+        this.userBlue=userBlue;
     }
 
     public ChessboardPoint getDest() {
@@ -108,5 +112,19 @@ public class Step implements Serializable{
         return color;
     }
 
+    public User getUserBlue() {
+        return userBlue;
+    }
 
+    public User getUserRed() {
+        return userRed;
+    }
+
+    public void setUserBlue(User userBlue) {
+        this.userBlue = userBlue;
+    }
+
+    public void setUserRed(User userRed) {
+        this.userRed = userRed;
+    }
 }

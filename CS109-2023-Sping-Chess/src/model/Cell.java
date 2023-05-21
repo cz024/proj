@@ -9,6 +9,7 @@ public class Cell implements Serializable {
     private ChessPiece piece;
 
 
+
     public ChessPiece getPiece() {
         return piece;
     }
@@ -20,4 +21,5 @@ public class Cell implements Serializable {
     public void removePiece() {
         this.piece = null;
     }
+
 }

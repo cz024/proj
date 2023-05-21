@@ -69,6 +69,7 @@ public class Chessboard implements Serializable {
                 grid[i][j].removePiece();
             }
         }
+
         grid[6][0].setPiece(new ChessPiece(PlayerColor.BLUE, "Elephant",8));
         grid[2][6].setPiece(new ChessPiece(PlayerColor.RED, "Elephant",8));
         grid[8][6].setPiece(new ChessPiece(PlayerColor.BLUE,"Lion",7));
@@ -97,7 +98,7 @@ public class Chessboard implements Serializable {
         return grid[point.getRow()][point.getCol()];
     }
 
-    private int calculateDistance(ChessboardPoint src, ChessboardPoint dest) {
+    public int calculateDistance(ChessboardPoint src, ChessboardPoint dest) {
         return Math.abs(src.getRow() - dest.getRow()) + Math.abs(src.getCol() - dest.getCol());
     }
 
@@ -147,6 +148,7 @@ public class Chessboard implements Serializable {
     public boolean realcapture(ChessboardPoint src, ChessboardPoint dest)
     {
         return (!isValidCapture(src, dest))&(getChessPieceAt(src).canCapture(getChessPieceAt(dest)));
+        //捕杀方式合法而且等级判断正确
     }
 
     public Cell[][] getGrid() {
@@ -192,11 +194,21 @@ public class Chessboard implements Serializable {
                         if (x1 == x2 && Math.abs(y1 - y2) == 4) {
                             for (int i = Math.min(y1, y2) + 1; i < Math.max(y1, y2); i++) {
                                 ChessboardPoint routine = new ChessboardPoint(i, x1);
-                                if (getChessPieceAt(routine) != null) {
+
+                                if (getChessPieceAt(routine) != null) //路上有东西
+                                {
                                     if (getChessPieceAt(routine).getName().equals("Rat")) {
                                         return false;
                                     }
                                 }
+                                else
+                                {
+                                    if(!riverCell.contains(routine))
+                                    {
+                                        return false;
+                                    }
+                                }
+
                             }
 //                            ifTrap(getChessPieceAt(src),dest);
                             return true;
@@ -208,6 +220,14 @@ public class Chessboard implements Serializable {
                                         return false;
                                     }
                                 }
+                                else
+                                {
+                                    if(!riverCell.contains(routine))
+                                    {
+                                        return false;
+                                    }
+                                }
+
                             }
                             //ifTrap(getChessPieceAt(src),dest);
                             return true;
@@ -275,7 +295,9 @@ public class Chessboard implements Serializable {
             int x1=src.getCol();int y1=src.getRow();
             int x2=dest.getCol();int y2=dest.getRow();
             if((!riverCell.contains(src))&&(!riverCell.contains(dest)))//两端都是陆地
+                //中间是陆地什么都没有也能跳杀
             {
+
                 if(x1==x2&&Math.abs(y1-y2)==4)//竖着跳河
                 {
                     for (int i=Math.min(y1,y2)+1;i<Math.max(y1,y2);i++)
@@ -284,6 +306,13 @@ public class Chessboard implements Serializable {
                         if(getChessPieceAt(routine)!=null)
                         {
                             if(getChessPieceAt(routine).getName().equals("Rat"))//有rat就不能抓
+                            {
+                                return true;
+                            }
+                        }
+                        else//没有棋子
+                        {
+                            if(!riverCell.contains(routine))
                             {
                                 return true;
                             }
@@ -299,7 +328,19 @@ public class Chessboard implements Serializable {
                         ChessboardPoint routine=new ChessboardPoint(y1,i);
                         if(getChessPieceAt(routine)!=null)
                         {
-                            if(getChessPieceAt(routine).getName().equals("Rat"))
+//                            if(!riverCell.contains(routine))
+//                            {
+//                                return false;
+//                            }
+                            if(getChessPieceAt(routine).getName().equals("Rat"))//有rat就不能抓
+                            {
+                                return true;
+                            }
+
+                        }
+                        else
+                        {
+                            if(!riverCell.contains(routine))
                             {
                                 return true;
                             }
@@ -368,5 +409,26 @@ public class Chessboard implements Serializable {
 
     public boolean judgeDens2Cell() {
         return grid[8][3].getPiece()!=null;
+    }
+
+
+    public Chessboard clone()
+    {
+        Chessboard chessboardclone=new Chessboard();
+        for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
+            for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
+                chessboardclone.grid[i][j].removePiece();
+            }
+        }
+        //上面是一个什么都没有的空棋盘，你现在要把当前chessboard里面的东西给到这个空棋盘里面
+        for (int i = 0; i < Constant.CHESSBOARD_ROW_SIZE.getNum(); i++) {
+            for (int j = 0; j < Constant.CHESSBOARD_COL_SIZE.getNum(); j++) {
+                if(this.grid[i][j].getPiece()!=null) {
+                    chessboardclone.grid[i][j].setPiece(this.grid[i][j].getPiece().clone());
+                }
+            }
+        }
+        return chessboardclone;
+
     }
 }

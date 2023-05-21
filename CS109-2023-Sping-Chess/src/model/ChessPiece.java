@@ -65,4 +65,8 @@ public class ChessPiece implements Serializable {
     public void setRank(int rank) {
         this.rank = rank;
     }
+    public ChessPiece clone()
+    {
+        return new ChessPiece(owner,name,rank);
+    }
 }
